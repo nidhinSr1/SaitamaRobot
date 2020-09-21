@@ -78,7 +78,7 @@ def warn(user: User,
         for warn_reason in reasons:
             reply += f"\n - {html.escape(warn_reason)}"
 
-        message.bot.send_sticker(chat.id, BAN_STICKER)  # Saitama's sticker
+        # message.bot.send_sticker(chat.id, BAN_STICKER)  # Saitama's sticker
         keyboard = []
         log_reason = (f"<b>{html.escape(chat.title)}:</b>\n"
                       f"#WARN_BAN\n"
@@ -164,14 +164,18 @@ def warn_user(update: Update, context: CallbackContext) -> str:
     warner: Optional[User] = update.effective_user
 
     user_id, reason = extract_user_and_text(message, args)
-
     if user_id:
-        if message.reply_to_message and message.reply_to_message.from_user.id == user_id:
-            return warn(message.reply_to_message.from_user, chat, reason,
-                        message.reply_to_message, warner)
-        else:
+        if (
+            message.reply_to_message
+            and message.reply_to_message.from_user.id == user_id
+        ):
             return warn(
-                chat.get_member(user_id).user, chat, reason, message, warner)
+                message.reply_to_message.from_user,
+                chat,
+                reason,
+                message.reply_to_message,
+                warner,
+            )
     else:
         message.reply_text("That looks like an invalid User ID to me.")
     return ""
